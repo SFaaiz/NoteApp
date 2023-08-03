@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "901780927214",
+    "project_id": "noteapp-a02c6",
+    "storage_bucket": "noteapp-a02c6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:901780927214:android:5d2f38c590179e039a39ff",
+        "android_client_info": {
+          "package_name": "com.faaiz.noteapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "901780927214-4nq5fnkq5mpejluiqiff2l8vui2n6t50.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5eV09WIV0IEEp7vkvbZkKydgPPBKU1gs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "901780927214-4nq5fnkq5mpejluiqiff2l8vui2n6t50.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,20 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.faaiz.noteapp.MainActivity">
+    <item
+        android:id="@+id/searchIcon"
+        android:title="Search"
+        android:icon="@drawable/baseline_search_24"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/changeView"
+        android:title="List View"
+        />
+
+    <item
+        android:id="@+id/accountsOption"
+        android:title="Accounts"
+        />
+</menu>
