@@ -1,6 +1,7 @@
 package com.faaiz.noteapp.Authentication;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
@@ -17,10 +18,19 @@ import com.faaiz.noteapp.MainActivity;
 import com.faaiz.noteapp.Model.User;
 import com.faaiz.noteapp.R;
 import com.faaiz.noteapp.databinding.ActivityAccountBinding;
+import com.google.android.gms.auth.api.identity.BeginSignInRequest;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class AccountActivity extends AppCompatActivity {
@@ -30,6 +40,7 @@ public class AccountActivity extends AppCompatActivity {
     FirebaseDatabase database;
     ProgressDialog progressDialog;
     public static String UID = "";
+    GoogleSignInClient googleSignInClient;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,10 +54,29 @@ public class AccountActivity extends AppCompatActivity {
         createProgressDialog();
 
         Button signUpBtn = findViewById(R.id.signUpBtn);
+        Button googleBtn = findViewById(R.id.googleBtn);
         EditText etUserName = findViewById(R.id.et_userName);
         EditText etEmail = findViewById(R.id.et_email);
         EditText etPassword = findViewById(R.id.et_password);
         TextView tvGotoLogin = findViewById(R.id.gotoLogin);
+
+        GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        googleSignInClient = GoogleSignIn.getClient(AccountActivity.this, googleSignInOptions);
+
+        googleBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = googleSignInClient.getSignInIntent();
+                startActivityForResult(intent, 100);
+            }
+        });
+
+
+
 
         tvGotoLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,6 +122,67 @@ public class AccountActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("TAG", "onActivityResult: inside acitivity result");
+        // Check condition
+        if (requestCode == 100) {
+            // When request code is equal to 100 initialize task
+            Task<GoogleSignInAccount> signInAccountTask;
+            signInAccountTask = GoogleSignIn.getSignedInAccountFromIntent(data);
+            Log.d("TAG", "onActivityResult: inside request code");
+            // check condition
+            if (signInAccountTask.isSuccessful()) {
+                Log.d("TAG", "onActivityResult: inside task successful");
+                // When google sign in successful initialize string
+                String s = "Google sign in successful";
+                displayToast(s);
+                // Initialize sign in account
+                try {
+                    // Initialize sign in account
+                    GoogleSignInAccount googleSignInAccount = signInAccountTask.getResult(ApiException.class);
+                    // Check condition
+                    if (googleSignInAccount != null) {
+                        Log.d("TAG", "onActivityResult: account is not null");
+                        // When sign in account is not equal to null initialize auth credential
+                        AuthCredential authCredential = GoogleAuthProvider.getCredential(googleSignInAccount.getIdToken(), null);
+                        // Check credential
+                        mAuth.signInWithCredential(authCredential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                // Check condition
+                                if (task.isSuccessful()) {
+                                    String uid = task.getResult().getUser().getUid();
+                                    UID = uid;
+                                    String email = mAuth.getCurrentUser().getEmail();
+                                    String username = mAuth.getCurrentUser().getDisplayName();
+                                    User user = new User(username,email);
+                                    database.getReference().child("Users").child(uid).setValue(user);
+                                    // When task is successful redirect to profile activity display Toast
+                                    startActivity(new Intent(AccountActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                                    displayToast("Firebase authentication successful");
+                                } else {
+                                    // When task is unsuccessful display Toast
+                                    displayToast("Authentication Failed :" + task.getException().getMessage());
+                                }
+                            }
+                        });
+                    }
+                } catch (ApiException e) {
+                    Log.w("TAG", "onActivityResult: ", e.getCause());
+                    e.printStackTrace();
+                }
+            }else{
+                Log.d("TAG", "onActivityResult: task is not successful");
+            }
+        }
+    }
+
+    private void displayToast(String s) {
+        Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
     }
 
     public void createProgressDialog(){

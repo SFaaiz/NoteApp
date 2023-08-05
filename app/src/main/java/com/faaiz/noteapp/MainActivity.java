@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.faaiz.noteapp.databinding.ActivityMainBinding;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     public static final String NOTE_SHARED_PREFERENCE = "noteSharedPreference";
     FirebaseDatabase firebaseDatabase;
     FirebaseAuth auth;
+    FirebaseUser currentUser;
     DatabaseReference myRef;
 
     @Override
