@@ -41,7 +41,7 @@ import android.widget.Toast;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
-    // updated
+    // updated 2
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
